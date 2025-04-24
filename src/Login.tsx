@@ -37,18 +37,40 @@ const Login: React.FC = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log('Login successful:', data);
-        setEditedItem({
-          username: '',
-          email: '',
-          password: '',
-          about: '',
-        });
-        navigate('/Userpage');
-      })
-      .catch((error) => {
-        console.error('Error logging in:', error);
-      });
+  // Check if the backend returns the tokens correctly
+  if (data.access && data.refresh) {
+    console.log('Login successful:', data);
+    if (data.access && data.refresh) {
+    console.log('Login successful:', data);
+
+    try {
+      localStorage.setItem('accessToken', data.access);
+      localStorage.setItem('refreshToken', data.refresh);
+    } catch (error) {
+      console.error('Error saving tokens to localStorage:', error);
+      alert('An error occurred while storing your login data. You may experience issues.');
+    }
+
+
+    setEditedItem({
+      username: '',
+      email: '',
+      password: '',
+      about: '',
+    });
+
+
+    navigate('/Userpage');
+  } else {
+    console.error('Login failed:', data);
+    alert('Invalid credentials, please try again.');
+  }
+  } else {
+    // Handle login failure (invalid credentials, etc.)
+    console.error('Login failed:', data);
+    alert('Invalid credentials, please try again.');
+  }
+})
   };
 
   return (
